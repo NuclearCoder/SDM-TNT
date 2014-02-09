@@ -1,0 +1,8 @@
+name: SDM-TNT
+version: 1.0
+main: nuclearcoder.sdmtnt.Plugin
+commands:
+  jointntgames:
+    usage: /<command>
+    description: Vous rejoignez la partie.
+    aliases: [jointnt, tntjoin]

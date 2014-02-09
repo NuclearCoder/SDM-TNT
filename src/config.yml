@@ -1,0 +1,101 @@
+groups:
+  Default:
+    permissions:
+    - -bukkit.command.kill
+    - groupmanager.notify.self
+    color: yellow
+    prefix: Visiteur
+    inherit: []
+  Builder:
+    permissions:
+    - essentials.afk
+    - essentials.afk.auto
+    - essentials.back
+    - essentials.back.ondeath
+    - essentials.balance
+    - essentials.balance.others
+    - essentials.balancetop
+    - essentials.book
+    - essentials.chat.color
+    - essentials.chat.format
+    - essentials.chat.shout
+    - essentials.chat.question
+    - essentials.compass
+    - essentials.delhome
+    - essentials.depth
+    - essentials.exp
+    - essentials.getpos
+    - essentials.hat
+    - essentials.home
+    - essentials.ignore
+    - essentials.itemdb
+    - essentials.kit
+    - essentials.kits.tools
+    - essentials.mail
+    - essentials.mail.send
+    - essentials.me
+    - essentials.msg
+    - essentials.msg.color
+    - essentials.msg.format
+    - essentials.nick
+    - essentials.pay
+    - essentials.ping
+    - essentials.powertool
+    - essentials.powertooltoggle
+    - essentials.protect
+    - essentials.recipe
+    - essentials.seen
+    - essentials.sethome
+    - essentials.sethome.bed
+    - essentials.sethome.multiple
+    - essentials.signs.use.*
+    - essentials.signs.create.disposal
+    - essentials.signs.create.mail
+    - essentials.signs.create.protection
+    - essentials.signs.create.trade
+    - essentials.signs.break.disposal
+    - essentials.signs.break.mail
+    - essentials.signs.break.protection
+    - essentials.signs.break.trade
+    - essentials.suicide
+    - essentials.time
+    - essentials.tpa
+    - essentials.tpaccept
+    - essentials.tpahere
+    - essentials.tpdeny
+    - essentials.warp
+    - essentials.warp.list
+    - essentials.worth
+    - essentials.jail.allow.mail
+    - essentials.jail.allow.ping
+    - essentials.jail.allow.seen
+    color: dark_green
+    prefix: 'Joueur '
+    inherit: []
+  Moderator:
+    permissions:
+    - bukkit.command.op
+    inherit:
+    - builder
+    color: dark_purple
+    prefix: Modo
+  Admin:
+    permissions: []
+    inherit:
+    - moderator
+    prefix: Admin
+    color: red
+  Owner:
+    permissions:
+    - '*'
+    - -vanish.*
+    inherit:
+    - admin
+    prefix: Admin
+    color: dark_red
+users:
+  alistar927:
+    permissions:
+    - essentials.tp.others
+    nick: Alistar927
+    group: Owner
