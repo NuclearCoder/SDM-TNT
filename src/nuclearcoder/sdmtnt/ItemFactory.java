@@ -13,7 +13,7 @@ public class ItemFactory {
 	}
 
 	public static ItemStack getSpell1() {
-		ItemStack result = new ItemStack(Material.FIREBALL);
+		ItemStack result = new ItemStack(Material.BOW);
 		ItemMeta meta = result.getItemMeta();
 
 		meta.setDisplayName(ChatColor.RESET + "Sort 1 - Boule de Feu");

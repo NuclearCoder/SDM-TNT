@@ -14,8 +14,6 @@ public class Plugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getCommand("jointntgames").setExecutor(game);
-		// YOLOSWAG
-		Bukkit.getPluginManager().registerEvents(game, this);
 	}
 
 	@Override

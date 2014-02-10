@@ -11,6 +11,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -68,6 +70,19 @@ public class Game implements Listener, CommandExecutor {
 			}
 
 			ev.setCancelled(cancelled);
+		}
+	}
+
+	@EventHandler
+	public void bowHandle(EntityShootBowEvent ev) {
+		Entity ent = ev.getEntity();
+
+		if (ent instanceof Player) {
+			Player p = (Player) ent;
+			String pn = p.getName().toLowerCase();
+			if (inGame.contains(pn)) {
+				plugin.getLogger().info(ev.getForce() + "");
+			}
 		}
 	}
 
@@ -195,6 +210,7 @@ public class Game implements Listener, CommandExecutor {
 				Game.this.gameStarted = true;
 				msg = ChatColor.GOLD + "La partie commence !";
 
+				Bukkit.getPluginManager().registerEvents(Game.this, plugin);
 				for (String pName : inGame) {
 					Player p = Bukkit.getPlayer(pName);
 					if (p != null) {
