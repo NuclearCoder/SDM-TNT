@@ -8,7 +8,7 @@ public class Plugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		game = new Game(this);
+		game = new Game(this, 1, 1);
 	}
 
 	@Override

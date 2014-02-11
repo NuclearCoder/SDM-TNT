@@ -12,7 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Fireball;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class Game implements Listener, CommandExecutor {
@@ -29,10 +30,14 @@ public class Game implements Listener, CommandExecutor {
 	private HashSet<String> inGame = new HashSet<String>();
 	private boolean gameStarted = false, gameStarting = false;
 
+	private int playerMin, playerMax;
+
 	private Plugin plugin;
 
-	public Game(Plugin plugin) {
+	public Game(Plugin plugin, int min, int max) {
 		this.plugin = plugin;
+		this.playerMin = min;
+		this.playerMax = max;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -57,9 +62,6 @@ public class Game implements Listener, CommandExecutor {
 				return;
 
 			switch (used.getType()) {
-			case BOW:
-				p.launchProjectile(Fireball.class);
-				break;
 			case BLAZE_ROD:
 				world.strikeLightning(loc);
 				world.strikeLightningEffect(loc);
@@ -81,9 +83,34 @@ public class Game implements Listener, CommandExecutor {
 			Player p = (Player) ent;
 			String pn = p.getName().toLowerCase();
 			if (inGame.contains(pn)) {
-				plugin.getLogger().info(ev.getForce() + "");
+				boolean isFull = ev.getForce() == 1.0F;
+
+				if (isFull) {
+					Entity fireball = p.getWorld().spawnEntity(
+							p.getLocation().add(0, 3, 0), EntityType.FIREBALL);
+					ev.setProjectile(fireball);
+					cooldown(p, 0, 5);
+				} else {
+					tell(p,
+							ChatColor.RED
+									+ "Vous devez charger l'arc à fond pour pouvoir lancer une boule de feu !");
+					ev.setCancelled(true);
+				}
 			}
 		}
+	}
+
+	private void cooldown(Player p, final int slot, int seconds) {
+		final Inventory inv = p.getInventory();
+		final ItemStack stack = inv.getItem(slot);
+		inv.clear(slot);
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin,
+				new Runnable() {
+					@Override
+					public void run() {
+						inv.setItem(slot, stack);
+					}
+				}, seconds * 20L);
 	}
 
 	@EventHandler
@@ -128,8 +155,7 @@ public class Game implements Listener, CommandExecutor {
 		String name = p.getName(), nameL = name.toLowerCase();
 
 		if (inGame.contains(nameL)) {
-			p.getInventory().clear();
-			p.getInventory().addItem(ItemFactory.getSpells());
+			ItemFactory.addSpells(p.getInventory());
 		}
 	}
 
@@ -144,21 +170,24 @@ public class Game implements Listener, CommandExecutor {
 			String name = p.getName(), nameL = name.toLowerCase();
 
 			if (inGame.contains(nameL)) {
-				p.sendMessage(ChatColor.RED + "Vous êtes déjà en jeu !");
-			} else if (np >= 5) {
-				p.sendMessage(ChatColor.RED
-						+ "Tout le monde a déjà rejoint ! Veuillez attendre la fin de la partie ou que quelqu'un quitte.");
+				tell(p, ChatColor.RED + "Vous êtes déjà en jeu !");
+			} else if (np >= playerMax) {
+				tell(p,
+						ChatColor.RED
+								+ "Tout le monde a déjà rejoint ! Veuillez attendre la fin de la partie ou que quelqu'un quitte.");
 			} else if (gameStarted) {
-				p.sendMessage(ChatColor.RED
-						+ "La partie a déjà commencé ! Veuillez attendre la fin.");
+				tell(p,
+						ChatColor.RED
+								+ "La partie a déjà commencé ! Veuillez attendre la fin.");
 			} else {
 				inGame.add(nameL);
 				np++;
 				say(ChatColor.AQUA + name + ChatColor.GOLD
 						+ " a rejoint la partie !");
-				say(ChatColor.GOLD + "Il y a " + np + "/5 joueurs.");
+				say(ChatColor.GOLD + "Il y a " + np + "/" + playerMax
+						+ " joueurs.");
 
-				if (np >= 2) {
+				if (np >= playerMin) {
 					gameStarting = true;
 					Bukkit.getScheduler().runTaskAsynchronously(plugin,
 							new TimerThread());
@@ -182,7 +211,7 @@ public class Game implements Listener, CommandExecutor {
 		}
 	}
 
-	private int timerStarting = 31;
+	private int timerStarting = 6;// 31;
 
 	private class TimerThread implements Runnable {
 		@Override
@@ -214,8 +243,7 @@ public class Game implements Listener, CommandExecutor {
 				for (String pName : inGame) {
 					Player p = Bukkit.getPlayer(pName);
 					if (p != null) {
-						p.getInventory().clear();
-						p.getInventory().addItem(ItemFactory.getSpells());
+						ItemFactory.addSpells(p.getInventory());
 					}
 				}
 			}

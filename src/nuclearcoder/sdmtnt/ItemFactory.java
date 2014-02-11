@@ -4,10 +4,22 @@ import java.util.Arrays;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemFactory {
+	public static void addSpells(Inventory inv) {
+		inv.clear();
+
+		ItemStack[] spells = getSpells();
+
+		inv.setItem(0, spells[0]);
+		inv.setItem(1, spells[1]);
+		inv.setItem(9, new ItemStack(Material.ARROW));
+	}
+
 	public static ItemStack[] getSpells() {
 		return new ItemStack[] { getSpell1(), getSpell2() };
 	}
@@ -20,6 +32,7 @@ public class ItemFactory {
 		meta.setLore(Arrays.asList(new String[] {
 				ChatColor.RESET + "" + ChatColor.BLUE + "3 dégâts",
 				ChatColor.RESET + "" + ChatColor.BLUE + "Récupération: 2s" }));
+		meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
 
 		result.setItemMeta(meta);
 		return result;
